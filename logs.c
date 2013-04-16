@@ -11,7 +11,7 @@ int read_lines_from_log(const char *log_path, char ***log_lines)
         exit(EXIT_FAILURE);
     }
 
-    char *line = (char *)malloc(sizeof(*line) * LINE_MAX_LEN);
+    char *line = (char *)malloc(sizeof(*line) * LINE_LEN);
     if (line == NULL) {
         fprintf(stderr, "Moar memory plox.\n");
         exit(EXIT_FAILURE);
@@ -20,7 +20,7 @@ int read_lines_from_log(const char *log_path, char ***log_lines)
     int line_pos = 0;
     char ch;
     while ((ch = getc(log_file)) != EOF) {
-        if (ch == '\n') {
+        if (ch == '\n' || line_pos == LINE_LEN-1) {
             line[line_pos] = '\0';
             add_line_to_log_lines(line, log_lines, &log_lines_len);
 
@@ -45,7 +45,7 @@ void add_line_to_log_lines(char* line, char ***log_lines, int *log_lines_len)
     }
     char **log_line = *log_lines + *log_lines_len;
 
-    *log_line = malloc(sizeof(***log_lines)*strlen(line));
-    strcpy(*log_line, line);
+    *log_line = malloc(sizeof(***log_lines)*LINE_LEN);
+    strncpy(*log_line, line, LINE_LEN);
     (*log_lines_len)++;
 }

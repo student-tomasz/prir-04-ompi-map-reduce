@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
     int log_lines_len;
     const char *log_path = argv[1];
 
+    int i;
+
+
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &procs_num);
     MPI_Comm_rank(MPI_COMM_WORLD, &proc_id);
@@ -30,12 +33,15 @@ int main(int argc, char *argv[])
         log_lines_len = read_lines_from_log(log_path, &log_lines);
         divide_jobs(log_lines, log_lines_len, procs_num, &procs_lines, &procs_lines_lens);
         send_lines_len_to_procs(procs_num, procs_lines_lens);
-        // send_lines_to_procs(procs_num, procs_lines);
+        send_lines_to_procs(procs_num, procs_lines, procs_lines_lens);
     }
     else {
         receive_lines_len(&lines_len);
         fprintf(stdout, "SLV%d otrzymal %d linii\n", proc_id, lines_len);
-        // receive_lines(&lines);
+        receive_lines(&lines, lines_len);
+        for (i = 0; i < lines_len; i++) {
+            fprintf(stdout, "SLV%d otrzymal linie \"%s\"\n", proc_id, lines[i]);
+        }
         // digest_lines(lines, &words, &words_count);
     }
 

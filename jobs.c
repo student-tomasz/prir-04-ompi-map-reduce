@@ -46,19 +46,34 @@ void send_lines_len_to_procs(const int procs_num, int *procs_lines_lens)
 void receive_lines_len(int *lines_len)
 {
     MPI_Status status;
-    MPI_Recv(lines_len, 1, MPI_INT, 0, LINE_LEN_MSG, MPI_COMM_WORLD, &status);
+    MPI_Recv(lines_len, 1, MPI_INT, MSTR_ID, LINE_LEN_MSG, MPI_COMM_WORLD, &status);
 }
 
-// void send_lines_to_procs(const int procs_num, char ***procs_lines)
-// {
-//     int proc_id, j;
-//     int lines_for_proc, chars_for_line;
+void send_lines_to_procs(const int procs_num, char ***procs_lines, int *procs_lines_lens)
+{
+    int proc_id, i;
+    int lines_for_proc;
 
-//     for (proc_id = 1; proc_id < procs_num; proc_id++) {
-//         lines_for_proc = sizeof(procs_lines[proc_id-1]) / sizeof(**procs_lines);
-//         for (j = 0; j < lines_for_proc; j++) {
-//             chars_for_line = strlen();
-//             MPI_Send(procs_lines[proc_id-1][j], chars_for_line, MPI_CHAR, proc_id, LINE_MSG, MPI_COMM_WORLD);
-//         }
-//     }
-// }
+    for (proc_id = 1; proc_id < procs_num; proc_id++) {
+        lines_for_proc = procs_lines_lens[proc_id];
+        for (i = 0; i < lines_for_proc; i++) {
+            MPI_Send(procs_lines[proc_id][i], LINE_LEN, MPI_CHAR, proc_id, LINE_MSG, MPI_COMM_WORLD);
+            fprintf(stderr, "MSTR wyslal do SLV%d linie \"%s\"\n", proc_id, procs_lines[proc_id][i]);
+        }
+    }
+}
+
+void receive_lines(char ***lines, int lines_len)
+{
+    int i;
+    MPI_Status status;
+
+    *lines = malloc(sizeof(**lines) * lines_len);
+    for (i = 0; i < lines_len; i++) {
+        (*lines)[i] = malloc(sizeof(***lines) * LINE_LEN);
+    }
+
+    for (i = 0; i < lines_len; i++) {
+        MPI_Recv((*lines)[i], LINE_LEN, MPI_CHAR, MSTR_ID, LINE_MSG, MPI_COMM_WORLD, &status);
+    }
+}
