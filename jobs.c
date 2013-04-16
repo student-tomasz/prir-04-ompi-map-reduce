@@ -21,14 +21,14 @@ void divide_jobs(char **log_lines, int log_lines_len, int procs_num, char ****pr
         for (j = 0; j < lines_per_proc; j++) {
             line_id = (i-1)*lines_per_proc + j;
             (*procs_lines)[i][j] = log_lines[line_id];
-            fprintf(stderr, "MSTR przydziela SLV%d przydziela linie %d\n", i, line_id);
+            // fprintf(stderr, "MSTR przydziela SLV%d przydziela linie %d\n", i, line_id);
         }
     }
     i = procs_num-1;
     for (j = 0; j < lines_for_last_proc; j++) {
         line_id = (i-1)*lines_per_proc+j;
         (*procs_lines)[i][j] = log_lines[line_id];
-        fprintf(stderr, "MSTR przydziela SLV%d przydziela linie %d\n", i, line_id);
+        // fprintf(stderr, "MSTR przydziela SLV%d przydziela linie %d\n", i, line_id);
     }
 }
 
@@ -58,7 +58,7 @@ void send_lines_to_procs(const int procs_num, char ***procs_lines, int *procs_li
         lines_for_proc = procs_lines_lens[proc_id];
         for (i = 0; i < lines_for_proc; i++) {
             MPI_Send(procs_lines[proc_id][i], LINE_LEN, MPI_CHAR, proc_id, LINE_MSG, MPI_COMM_WORLD);
-            fprintf(stderr, "MSTR wyslal do SLV%d linie \"%s\"\n", proc_id, procs_lines[proc_id][i]);
+            // fprintf(stderr, "MSTR wyslal do SLV%d linie \"%s\"\n", proc_id, procs_lines[proc_id][i]);
         }
     }
 }

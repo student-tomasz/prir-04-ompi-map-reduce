@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
 
     int lines_len;
     char **lines;
+    int words_len;
     char **words;
     int *words_count;
 
@@ -37,12 +38,8 @@ int main(int argc, char *argv[])
     }
     else {
         receive_lines_len(&lines_len);
-        fprintf(stdout, "SLV%d otrzymal %d linii\n", proc_id, lines_len);
         receive_lines(&lines, lines_len);
-        for (i = 0; i < lines_len; i++) {
-            fprintf(stdout, "SLV%d otrzymal linie \"%s\"\n", proc_id, lines[i]);
-        }
-        // digest_lines(lines, &words, &words_count);
+        digest_lines(lines, lines_len, &words, &words_count, &words_len);
     }
 
     MPI_Finalize();
